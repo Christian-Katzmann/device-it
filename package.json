@@ -3,5 +3,10 @@
   "private": true,
   "type": "module",
   "description": "Runtime deps for device-it verification (playwright) — node_modules is gitignored",
-  "dependencies": { "playwright": "^1.57.0" }
+  "dependencies": {
+    "playwright": "^1.57.0"
+  },
+  "scripts": {
+    "verify": "bash scripts/selfcheck.sh"
+  }
 }
