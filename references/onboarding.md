@@ -1,7 +1,7 @@
-# One-time setup (Tier 1: zero-touch installs)
+# One-time setup (zero-touch lane: no-tap installs)
 
 Run this the first time `/device-it setup` is invoked, or when `~/.device-it/config.json`
-is missing and the user wants zero-touch. The QR lane needs none of this.
+is missing and the user wants zero-touch. The scan lane needs none of this.
 
 Agent does everything except the four [HUMAN] moments. Total human time ≈ 10 min, once.
 When finished, write `~/.device-it/config.json` — its presence is the "setup done" flag;

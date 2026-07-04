@@ -2,7 +2,7 @@
 
 **What was proposed.** Use SimpleMDM as the MDM: hosted, API-first, zero maintenance —
 upload a web-clip profile via REST, assign to device, done. It was the original design's
-Tier-1 lane.
+zero-touch lane.
 
 **What made it attractive.** Genuinely the cleanest API in the MDM space; no push-cert
 dance, no server to run; the 30-day trial would have validated the whole zero-touch UX

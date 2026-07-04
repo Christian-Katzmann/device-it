@@ -74,7 +74,7 @@ const claimSnippet = args['claim-banner'] ? `
   if(!u||localStorage.getItem('deviceit-claimed'))return;
   var b=document.createElement('div');
   b.id='deviceit-claim';
-  b.innerHTML='<span><strong>Keep this app</strong> \\u2014 temporary hosting, expires in ~1 hour unless claimed.</span><a rel="noopener" target="_blank">Claim free</a><button aria-label="claimed">\\u2713 Done</button>';
+  b.innerHTML='<span><strong>Keep this app</strong> \\u2014 it\\u2019s on temporary hosting for about an hour. Claiming is free.</span><a rel="noopener" target="_blank">Claim it</a><button aria-label="claimed">\\u2713 Claimed</button>';
   b.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top));transform:translateX(-50%);display:flex;gap:12px;align-items:center;background:#B45309;color:#fff;font:500 14px/1.35 -apple-system,system-ui,sans-serif;padding:10px 14px;border-radius:12px;z-index:2147483647;box-shadow:0 6px 24px rgba(0,0,0,.35);max-width:94vw';
   var a=b.querySelector('a');a.href=u;a.style.cssText='background:#fff;color:#B45309;font-weight:700;text-decoration:none;padding:6px 12px;border-radius:8px;white-space:nowrap';
   var x=b.querySelector('button');x.style.cssText='background:none;border:none;color:rgba(255,255,255,.85);font-size:14px;padding:2px 4px';

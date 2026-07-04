@@ -13,9 +13,9 @@
 
 *Real, unedited output of one run: inspect → build → PWA transform → deploy → verify (12/12 checks, offline reload included) → a scannable install QR. The icon was lifted automatically from the project's Mac app.*
 
-**Status:** working end-to-end on real projects. Young project, public since July 2026 — the QR/link lane is exercised daily; the Apple zero-touch lane and the authed-Netlify driver are code-complete with fewer miles on them. Runs on macOS (full) and Linux (QR lane); Windows via WSL.
+**Status:** working end-to-end on real projects. Young project, public since July 2026 — the scan lane is exercised daily; the Apple zero-touch lane and the authed-Netlify driver are code-complete with fewer miles on them. Runs on macOS (full) and Linux (scan lane); Windows via WSL.
 
-Want to feel the result before installing anything? This app was produced by device-it — open it on your phone and add it to your Home Screen: **[deviceit-dice.vercel.app](https://deviceit-dice.vercel.app)**
+Try the result on your own phone first — this app was produced by device-it; open it and add it to your Home Screen: **[deviceit-dice.vercel.app](https://deviceit-dice.vercel.app)**
 
 ## How it works
 
@@ -37,7 +37,7 @@ Want to feel the result before installing anything? This app was produced by dev
 
 The transform happens on the **built output only** — device-it never edits your source tree. Re-running on the same project updates the same URL in place; the installed app picks up the new build on next launch.
 
-## Install
+## Get device-it
 
 **Claude Code** — clone as a personal skill:
 
@@ -66,18 +66,18 @@ Requirements: Node 18+, git, and ImageMagick (`magick`) on Linux — macOS can f
 
 ## The two install lanes
 
-| | QR / link lane | Pocket-MDM lane |
+| | Scan lane | Zero-touch lane |
 |---|---|---|
 | Devices | iPhone, iPad, Android, desktop Chrome/Edge | Apple devices |
 | Effort per app | scan the QR, then 1–2 taps | none — the icon just appears |
 | Accounts | none needed | free, self-hosted (one-time ~10 min setup) |
-| Uninstall | delete the icon | zero-touch remove, too |
+| Uninstall | delete the icon | removed the same way — no taps |
 
-The pocket MDM is a tiny [nanomdm](https://github.com/micromdm/nanomdm) that runs **on your own machine, only while installing**, reached through a Tailscale Funnel, with a free Apple push certificate. No subscription, no hosted service, no data leaving your machine — the full setup walkthrough is in [`references/onboarding.md`](references/onboarding.md).
+The zero-touch lane is powered by a **pocket MDM**: a tiny [nanomdm](https://github.com/micromdm/nanomdm) that runs **on your own machine, only while installing**, reached through a Tailscale Funnel, with a free Apple push certificate. No subscription, no hosted service, no data leaving your machine — the full setup walkthrough is in [`references/onboarding.md`](references/onboarding.md).
 
-## Deploying without any account
+## Claim-first deploy — no account needed
 
-If no hosting CLI is authed, device-it uses Netlify's anonymous deploy: your app is live on HTTPS in about a minute, **claimable for 60 minutes** — one click (GitHub SSO) makes it permanently yours, free. device-it opens the claim page on your computer, bakes a claim banner into the app itself, and tells you the temporary password the site carries until it's claimed. If the hour passes unclaimed, the site is deleted — device-it says this out loud rather than letting the app die quietly.
+If no hosting CLI is authed, device-it uses Netlify's anonymous deploy, so **your app is live before you have an account**: on HTTPS in about a minute, yours to claim for 60 minutes — one click (GitHub SSO) makes it permanent and free. device-it opens the claim page on your computer, bakes a claim prompt into the app itself, and prints the temporary password the site carries until it's claimed. If the hour passes unclaimed, the site is deleted — device-it says this plainly rather than letting the app die quietly.
 
 ![Day Shaper running as an installed-style app with the install hint visible](design/screenshots/02-install-hint.png)
 
@@ -87,7 +87,7 @@ If no hosting CLI is authed, device-it uses Netlify's anonymous deploy: your app
 
 - **Not a native-app compiler.** No Xcode, no signing, no App Store. Apps are installed PWAs / managed web clips. If you need deep native APIs, this is the wrong tool — deliberately.
 - **Not a hosting service.** Deploys go to *your* accounts (or a claimable anonymous site). A public URL means a public app; device-it won't add a login wall, because auth walls break offline.
-- **Not an Android MDM.** Zero-touch push rides Apple's MDM protocol. Android and desktop always use the QR/link lane — which there is a *one-tap* native install, so little is lost.
+- **Not an Android MDM.** The zero-touch lane rides Apple's MDM protocol. Android and desktop always use the scan lane — where install is a *one-tap* browser prompt, so little is lost.
 
 ## Honest limits
 

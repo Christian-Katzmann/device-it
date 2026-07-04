@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# device-it orchestrator: one command from project dir → app on your device (or QR).
+# device-it orchestrator: one command from project dir â app on your device (or QR).
 #   run.sh [project-dir] [--icon img] [--name "Name"] [--slug slug] [--driver name] [--skip-verify]
 #   run.sh --url https://already-hosted.app --name "Name" [--icon img] [--slug slug]   # wrap mode
 #   run.sh remove <slug>
@@ -42,7 +42,7 @@ while [[ $# -gt 0 ]]; do case "$1" in
   *) PROJ="$1"; shift;;
 esac; done
 
-# ---- wrap mode: existing hosted URL → just make it installable ---------------
+# ---- wrap mode: existing hosted URL â just make it installable ---------------
 if [[ -n "$WRAP_URL" ]]; then
   [[ -n "$SLUG" ]] || SLUG=$(python3 -c "from urllib.parse import urlparse;h=urlparse('$WRAP_URL').hostname or 'app';print(h.split('.')[0].lower())")
   [[ -n "$NAME" ]] || NAME=$(python3 -c "print('$SLUG'.replace('-',' ').title())")
@@ -62,12 +62,12 @@ if [[ -n "$WRAP_URL" ]]; then
     bash "$S/mdm/mdm-up.sh" >/dev/null
     node "$S/mdm/mdm-push.mjs" install --profile "$OUT_HOME/$SLUG.mobileconfig"
     bash "$S/mdm/mdm-down.sh" >/dev/null
-    echo "TIER1=pushed"
+    echo "LANE=zero-touch (pushed)"
   else
     bash "$S/qr.sh" "$WRAP_URL" "$OUT_HOME/$SLUG-qr.png"
-    echo "TIER2=qr ($OUT_HOME/$SLUG-qr.png)"
+    echo "LANE=scan (qr: $OUT_HOME/$SLUG-qr.png)"
   fi
-  echo "MODE=wrap (no build/deploy — offline & Android install quality depend on the site itself)"
+  echo "MODE=wrap (no build/deploy â offline & Android install quality depend on the site itself)"
   echo "APP=$NAME"; echo "SLUG=$SLUG"; echo "URL=$WRAP_URL"; echo "PROFILE=$OUT_HOME/$SLUG.mobileconfig"
   exit 0
 fi
@@ -114,7 +114,7 @@ if [[ -z "$ICON" ]]; then
   done
 fi
 if [[ -z "$ICON" || ! -f "$ICON" ]]; then
-  # monogram placeholder — never block on a missing icon
+  # monogram placeholder â never block on a missing icon
   ICON="$OUT_HOME/$SLUG-monogram.png"
   L=$(echo "$NAME" | cut -c1 | tr '[:lower:]' '[:upper:]')
   magick -size 1024x1024 xc:'#14161A' -fill '#7fd4a8' -draw 'roundrectangle 96,96 928,928 200,200' \
@@ -128,7 +128,7 @@ ICON_DIR="$OUT_HOME/$SLUG-icons"
 bash "$S/icons.sh" "$ICON" "$ICON_DIR" >/dev/null
 CLAIM_ARGS=""
 [[ "$DRIVER" == "netlify-anon" ]] && CLAIM_ARGS="--claim-banner 1"
-# shellcheck disable=SC2086 — deliberate word-split of fixed tokens (bash-3.2-safe empty "array")
+# shellcheck disable=SC2086 â deliberate word-split of fixed tokens (bash-3.2-safe empty "array")
 node "$S/pwaify.mjs" --dist "$DIST" --name "$NAME" --icons "$ICON_DIR" $CLAIM_ARGS
 
 DEPLOY=$(bash "$S/deploy/$DRIVER.sh" "$DIST" "$SLUG")
@@ -139,16 +139,16 @@ CLAIM_URL=$(echo "$DEPLOY" | grep '^CLAIM_URL=' | cut -d= -f2- || true)
 PASSWORD=$(echo "$DEPLOY" | grep '^PASSWORD=' | cut -d= -f2- || true)
 EPHEMERAL=$(echo "$DEPLOY" | grep '^EPHEMERAL=' | cut -d= -f2- || true)
 
-# Anonymous sites sit behind a password until claimed → HTTP verify would 401. Defer it.
+# Anonymous sites sit behind a password until claimed â HTTP verify would 401. Defer it.
 if [[ "$DRIVER" == "netlify-anon" && $SKIP_VERIFY -eq 0 ]]; then
   SKIP_VERIFY=1
-  echo "VERIFY=deferred (site is password-gated until claimed — claim first, then it verifies)"
+  echo "VERIFY=deferred (site is password-gated until claimed â claim first, then it verifies)"
 fi
 
 # ---- verify ------------------------------------------------------------------
 if [[ $SKIP_VERIFY -eq 0 ]]; then
   node "$S/verify.mjs" --url "$URL" > "$OUT_HOME/$SLUG-verify.json" \
-    || { echo "VERIFY=FAILED — see $OUT_HOME/$SLUG-verify.json" >&2; exit 1; }
+    || { echo "VERIFY=FAILED â see $OUT_HOME/$SLUG-verify.json" >&2; exit 1; }
   echo "VERIFY=ok ($(python3 -c "import json;d=json.load(open('$OUT_HOME/$SLUG-verify.json'));print(f\"{sum(r['ok'] for r in d['results'])}/{len(d['results'])} checks, offline {d['offline']}\")"))"
 fi
 
@@ -162,13 +162,13 @@ QR_TARGET="$URL"
 if [[ -n "$CLAIM_URL" ]]; then
   ENC=$(node -e 'process.stdout.write(encodeURIComponent(process.argv[1]))' "$CLAIM_URL")
   QR_TARGET="$URL/#claim=$ENC"
-  # Open the claim page on this computer right away — usually one GitHub-SSO click.
+  # Open the claim page on this computer right away â usually one GitHub-SSO click.
   case "$(uname)" in
     Darwin) open "$CLAIM_URL" 2>/dev/null || true;;
     Linux)  xdg-open "$CLAIM_URL" 2>/dev/null || true;;
   esac
   echo "CLAIM_URL=$CLAIM_URL"
-  echo "CLAIM_NOTE=claim within 1 HOUR or the site is deleted; claiming makes it permanent + free and removes the password gate"
+  echo "CLAIM_NOTE=claim within 60 minutes or the site is deleted — claiming is free, makes the URL permanent, and removes the password"
   [[ -n "$PASSWORD" ]] && echo "SITE_PASSWORD=$PASSWORD (needed only until claimed)"
 fi
 
@@ -176,11 +176,11 @@ if mdm_enrolled; then
   bash "$S/mdm/mdm-up.sh" >/dev/null
   node "$S/mdm/mdm-push.mjs" install --profile "$OUT_HOME/$SLUG.mobileconfig"
   bash "$S/mdm/mdm-down.sh" >/dev/null
-  echo "TIER1=pushed"
+  echo "LANE=zero-touch (pushed)"
 else
   bash "$S/qr.sh" "$QR_TARGET" "$OUT_HOME/$SLUG-qr.png"
-  bash "$S/send-imessage.sh" "$QR_TARGET" "$NAME — install link" || true
-  echo "TIER2=qr ($OUT_HOME/$SLUG-qr.png)"
+  bash "$S/send-imessage.sh" "$QR_TARGET" "$NAME â install link" || true
+  echo "LANE=scan (qr: $OUT_HOME/$SLUG-qr.png)"
 fi
 
 echo "DRIVER=$DRIVER"

@@ -23,10 +23,10 @@ else
   ok "driver: $PICK"
 fi
 
-echo "[tier-1: pocket MDM (Apple devices)]"
+echo "[zero-touch lane: pocket MDM (Apple devices)]"
 ENROLLED=$(python3 -c 'import json;print(1 if json.load(open("'"$CFG"'")).get("devices") else 0)' 2>/dev/null || echo 0)
 if [[ "$ENROLLED" != "1" ]]; then
-  warn "no device enrolled — QR lane works now; run '/device-it setup' for zero-touch Apple installs"
+  warn "no device enrolled — the scan lane works now; run '/device-it setup' for no-tap Apple installs"
 else
   ok "device(s) enrolled"
   [[ -x "$HOME/.device-it/bin/nanomdm" ]] && ok "nanomdm binary" || bad "nanomdm binary missing"

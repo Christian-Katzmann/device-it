@@ -2,7 +2,7 @@
 
 Lead with the outcome, then only what changes what the user does next.
 
-## Tier 1 (MDM lane — Apple devices)
+## Zero-touch lane (MDM push — Apple devices)
 > **Done. "<Name>" is on your <device>.** (icon: <icon>, url: <url>)
 > Tap it once while online and it's offline-capable from then on.
 > Update: rerun /device-it here. Remove: /device-it remove <slug>.
@@ -10,7 +10,7 @@ Lead with the outcome, then only what changes what the user does next.
 Use the enrolled device's real name (iPad / iPhone). If it hasn't acknowledged yet: say
 "pushed — it appears the moment the device wakes", never pretend it's confirmed.
 
-## Tier 2 (QR/link lane — any device)
+## Scan lane (QR/link — any device)
 > **Ready.** On the device, scan this QR (or tap the link I texted you), then:
 > - **iPhone/iPad**: Share → Add to Home Screen (≈2 taps).
 > - **Android / desktop Chrome-Edge**: tap the browser's Install prompt (1 tap).

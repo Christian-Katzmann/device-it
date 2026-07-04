@@ -33,7 +33,7 @@ network, no deploys, safe to run anywhere).
   so a hung CLI can't stall the pipeline.
 - **netlify-cli is pinned to `@26`** because `netlify-anon.sh` parses its human-readable
   output (URL, claim link, password). A major bump means re-verifying the parser.
-- **macOS-only tools are guarded** (`plutil`, `sips`) so the QR lane works on Linux.
+- **macOS-only tools are guarded** (`plutil`, `sips`) so the scan lane works on Linux.
   Keep the guards — CI runs on ubuntu.
 - Runtime state lives in `~/.device-it/` (registry, artifacts, MDM material, staging) —
   nothing stateful in the repo. The MDM API key lives in the macOS keychain

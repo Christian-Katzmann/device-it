@@ -18,17 +18,17 @@ description: >-
 Sibling to app-it: app-it makes a **macOS Dock** app; device-it makes a **Home Screen /
 launcher** app on the devices you carry. One PWA build serves them all —
 
-- **iPhone / iPad / Android / desktop Chrome-Edge**: the QR/link lane installs a fullscreen,
+- **iPhone / iPad / Android / desktop Chrome-Edge**: the **scan lane** installs a fullscreen,
   offline app with its own icon everywhere. Android/desktop get an even cleaner native install
   than iOS. This lane needs no accounts and works today.
-- **Apple devices, once enrolled**: the pocket-MDM lane pushes the icon so it just appears,
-  zero taps. Apple-only (it rides Apple's MDM); Android/desktop always use the QR/link lane.
+- **Apple devices, once enrolled**: the **zero-touch lane** pushes the icon so it just appears,
+  no taps. Apple-only (it rides Apple's MDM); Android/desktop always use the scan lane.
 
 Lane decided by one check: if `~/.device-it/config.json` exists, an Apple device is enrolled
-→ **Tier 1: push the web clip, icon appears with zero taps.** Otherwise → **Tier 2: QR/iMessage
-link + Add to Home Screen (≈2 taps; Android/desktop show a native install prompt)**, and mention
-that `/device-it setup` (~10 min, once) upgrades Apple devices to zero-touch. Never block Tier 2
-on setup — it's the universal lane.
+→ **zero-touch lane: push the web clip, the icon appears with no taps.** Otherwise → **scan lane:
+QR/iMessage link + Add to Home Screen (≈2 taps; Android/desktop show a native install prompt)**,
+and mention that `/device-it setup` (~10 min, once) upgrades Apple devices to zero-touch. Never
+block the scan lane on setup — it's the universal one.
 
 ## Non-negotiables
 
@@ -47,8 +47,8 @@ on setup — it's the universal lane.
 ## Pipeline (default invocation)
 
 One command does everything — inspect, build, icons, PWA transform, deploy-driver
-auto-pick, deploy, verify, web clip, then MDM push (Tier 1) or QR+iMessage (Tier 2),
-plus registry bookkeeping:
+auto-pick, deploy, verify, web clip, then the zero-touch lane (MDM push) or the
+scan lane (QR+iMessage), plus registry bookkeeping:
 
 ```bash
 bash /path/to/skills/device-it/scripts/run.sh <project-dir> [--icon img] [--name "Name"] [--slug slug] [--driver name]
@@ -65,12 +65,12 @@ See `references/hosting.md` for all drivers and their live-verified quirks.
 
 Icon discovery order (run.sh does this itself): `--icon` → inspect's ICON_CANDIDATES →
 the app-it Mac app's `.icns` for the same project root → generated monogram (never blocks).
-Read run.sh output: URL, VERIFY, TIER1/TIER2, PROFILE — relay per report-template.
+Read run.sh output: URL, VERIFY, LANE (`zero-touch` or `scan`), PROFILE — relay per report-template.
 Individual stages remain callable (`inspect.sh`, `icons.sh`, `pwaify.mjs`, `deploy/vercel.sh`,
 `verify.mjs`, `webclip.mjs`, `mdm/*`, `qr.sh`, `registry.mjs`) for debugging or partial reruns.
 
 The PWA transform also injects a dismissible iOS-only "tap Share → Add to Home Screen"
-hint that renders only in Safari (never in the installed app) — Tier-2 users see their
+hint that renders only in Safari (never in the installed app) — scan-lane users see their
 own install instructions on screen.
 
 ## Other verbs
@@ -86,7 +86,7 @@ own install instructions on screen.
 
 ## Reference map
 
-- `references/onboarding.md` — one-time Tier-1 setup wizard (agent-driven).
+- `references/onboarding.md` — one-time zero-touch-lane setup wizard (agent-driven).
 - `references/mdm-protocol.md` — nanomdm endpoints, command plists, lifecycle, renewal.
 - `references/hosting.md` — deploy driver contract, vercel details, custom domains, caveats.
 - `references/report-template.md` — the exact final report to give the user.
@@ -95,7 +95,7 @@ own install instructions on screen.
 
 - Offline starts after the FIRST launch (SW caches then) — no lane can launch the app for you.
 - Backend-dependent apps: shell works offline, API calls need their backend.
-- Zero-touch push is Apple-only. Android/desktop always use the QR/link lane (1-tap install
+- The zero-touch lane is Apple-only. Android/desktop always use the scan lane (1-tap install
   there, so no real loss). Non-Apple devices never need setup.
 - Apple device asleep during push → icon appears when it wakes ("pushed", not "confirmed").
 - Yearly APNs cert renewal (~3 min); doctor warns 30 days out.
