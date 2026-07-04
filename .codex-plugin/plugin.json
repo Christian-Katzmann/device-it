@@ -1,0 +1,41 @@
+{
+  "name": "device-it",
+  "version": "0.1.0",
+  "description": "Turn local web projects into installable phone, tablet, and desktop apps through PWA build, deploy, QR, and MDM install flows.",
+  "author": {
+    "name": "Christian Katzmann"
+  },
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "claude-code",
+    "skills",
+    "pwa",
+    "mobile",
+    "tablet",
+    "desktop",
+    "mdm",
+    "qr",
+    "local-dev"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Device It",
+    "shortDescription": "Put a local web project on a phone, tablet, or desktop as an installable app.",
+    "longDescription": "Device It builds a local web project, applies a PWA transform to the built output, deploys it to HTTPS, and installs it through QR/Add-to-Home-Screen or Apple MDM.",
+    "developerName": "Christian Katzmann",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Read",
+      "Write",
+      "Local",
+      "Network"
+    ],
+    "defaultPrompt": [
+      "Use device-it to put this project on my phone.",
+      "Make this local web project installable on my iPad.",
+      "Turn this web app into a device Home Screen app."
+    ],
+    "brandColor": "#7FD4A8"
+  }
+}
