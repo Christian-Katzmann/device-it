@@ -88,6 +88,8 @@ own install instructions on screen.
 
 - `references/onboarding.md` — one-time zero-touch-lane setup wizard (agent-driven).
 - `references/mdm-protocol.md` — nanomdm endpoints, command plists, lifecycle, renewal.
+- `references/zero-touch-edge-cases.md` — field fixes for VPS-hosted apps, APNs cert import,
+  Tailscale path routing, iOS enrollment serving, and gitignored private state.
 - `references/hosting.md` — deploy driver contract, vercel details, custom domains, caveats.
 - `references/report-template.md` — the exact final report to give the user.
 

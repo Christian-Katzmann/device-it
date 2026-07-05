@@ -10,6 +10,9 @@ never run onboarding again while it exists.
 ## 0. Preflight
 - `vercel whoami` (deploy lane), `tailscale version` (install via brew if missing).
 - Create dirs: `~/.device-it/{bin,mdm,out,stage}`.
+- Private state is canonical in `~/.device-it/`. If a user wants a plugin-local recovery copy,
+  store it under `device-it/local-state/<case>/`; that path is gitignored and may contain
+  certs, private keys, profiles, UDIDs, and field notes.
 
 ## 1. Tailscale + Funnel
 1. `tailscale status` — if stopped: `tailscale up` ([HUMAN] browser sign-in on first ever login).
@@ -63,6 +66,8 @@ existing cert (not create a new one) or the topic changes and the iPad must re-e
 1. Serve `enroll.mobileconfig` at the funnel URL — simplest: `python3 -m http.server` behind a second
    funnel path is overkill; instead AirDrop the file, or host it briefly with
    `npx --yes serve ~/.device-it/mdm` + `tailscale funnel --bg 3000` and show a QR (`scripts/qr.sh`).
+   If hidden-folder file serving returns 500, iOS ignores the profile MIME, or scanner noise hits
+   the Funnel root, use the workaround in `zero-touch-edge-cases.md`.
 2. [HUMAN, once ever] On the iPad: open the URL/file → Settings → "Profile Downloaded" →
    Install → passcode → Install. (iPadOS may require Safari for the download.)
 3. Watch `~/.device-it/mdm/nanomdm.log` for the enrollment (TokenUpdate) — extract the device UDID.
@@ -92,3 +97,5 @@ to demonstrate zero-touch uninstall. Setup complete.
   or p12 rejected → regenerate with `-legacy` (make-ca.sh already tries this).
 - `Mdm-Signature` errors in log: enrollment profile must have `SignMessage=true` (ours does);
   nanomdm parses identity from that header because TLS terminates at the funnel.
+- Public scanner noise in `nanomdm.log`: use the edge-case workaround in
+  `zero-touch-edge-cases.md` to expose only `/mdm` and `/enroll.mobileconfig` temporarily.
