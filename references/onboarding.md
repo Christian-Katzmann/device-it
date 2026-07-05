@@ -34,21 +34,30 @@ never run onboarding again while it exists.
 - `openssl rand -hex 24` → store: `security add-generic-password -s device-it-nanomdm -a nanomdm -w <key>`.
 
 ## 4. APNs MDM push certificate (the one unavoidable Apple dance)
-Free via mdmcert.download (issued to organizations; a CVR/company name is fine). Two routes:
+Free via mdmcert.download (issued to organizations; a CVR/company name is fine).
+
+**Agent, drive this — the human has only TWO real touches.** Before starting, check which
+MCPs this session has and use them; the whole step collapses to minutes:
+- An email MCP (Outlook, Gmail, …) that can read the org inbox → fetch the mdmcert
+  verification link AND the encrypted signed-CSR attachment yourself. Human touch #1
+  disappears entirely.
+- A browser MCP (Chrome) → drive https://identity.apple.com/pushcert/ yourself: sign-in
+  page, upload the `.req`, download the `MDM_*.pem`. The human only enters their Apple ID
+  password + 2FA tap (never type credentials for them). That's human touch #2, ~30 seconds.
+Without those MCPs, narrate each step and let the human click; it's the same flow, just slower.
 
 **Route A — mdmctl (preferred):** download micromdm release (has `mdmctl`), then
-1. Register email at https://mdmcert.download/registration ([HUMAN] click verify link in email —
-   or agent fetches it via the Outlook MCP if that inbox is connected).
+1. Register email at https://mdmcert.download/registration ([HUMAN or email-MCP] verify link).
 2. `mdmctl mdmcert.download -new -email=<email>` → wait for the encrypted signed CSR by email
    (save attachment to `~/.device-it/mdm/`).
 3. `mdmctl mdmcert.download -decrypt=<attachment>` → produces a `.req` push CSR.
-4. [HUMAN-ish] Upload the `.req` at https://identity.apple.com → "Create a Certificate".
-   Agent may drive the browser via the Chrome MCP; the human only does Apple ID + 2FA.
-   Download `MDM_...pem` push certificate.
+4. [HUMAN: Apple ID + 2FA only; browser-MCP does the rest] Upload the `.req` at
+   https://identity.apple.com/pushcert/ → "Create a Certificate" → download `MDM_...pem`.
 5. Concatenate cert + the private key from step 2 into `~/.device-it/mdm/push.pem`.
 6. Note the topic: `openssl x509 -in push.pem -noout -subject` → `UID=com.apple.mgmt.External.<uuid>`.
 
 **Route B — manual:** follow https://mdmcert.download/instructions with raw openssl (CSR upload form).
+**Field-verified end to end** — the exact working sequence is in `zero-touch-edge-cases.md` §APNs.
 
 RENEWAL: yearly, same flow, at identity.apple.com — MUST use the same Apple ID and RENEW the
 existing cert (not create a new one) or the topic changes and the iPad must re-enroll.
@@ -62,16 +71,27 @@ existing cert (not create a new one) or the topic changes and the iPad must re-e
 - `curl -u "nanomdm:<api-key>" -T ~/.device-it/mdm/push.pem 'http://127.0.0.1:9930/v1/pushcert'`
   (expects JSON with the topic back).
 
-## 7. Enroll the iPad
-1. Serve `enroll.mobileconfig` at the funnel URL — simplest: `python3 -m http.server` behind a second
-   funnel path is overkill; instead AirDrop the file, or host it briefly with
-   `npx --yes serve ~/.device-it/mdm` + `tailscale funnel --bg 3000` and show a QR (`scripts/qr.sh`).
-   If hidden-folder file serving returns 500, iOS ignores the profile MIME, or scanner noise hits
-   the Funnel root, use the workaround in `zero-touch-edge-cases.md`.
-2. [HUMAN, once ever] On the iPad: open the URL/file → Settings → "Profile Downloaded" →
-   Install → passcode → Install. (iPadOS may require Safari for the download.)
-3. Watch `~/.device-it/mdm/nanomdm.log` for the enrollment (TokenUpdate) — extract the device UDID.
-4. Write config:
+## 7. Enroll the device
+Get `enroll.mobileconfig` onto the device — in this order of preference:
+
+1. **AirDrop (default).** The device is Apple and usually within arm's reach of this Mac:
+   `open -a AirDrop ~/.device-it/mdm/enroll.mobileconfig` (or Finder → share). No server,
+   no funnel path, no MIME headers, nothing to tear down. iOS receives it as a profile
+   directly.
+2. **Ride the app's own deploy.** Copy the profile into any static deploy this skill already
+   made (`cp enroll.mobileconfig <dist>/ && redeploy`), QR that URL, delete + redeploy after.
+   Correct MIME for free; works when the device is remote.
+3. **Funnel-served (last resort, remote + no deploy).** Fiddly: hidden-folder 500s, MIME
+   issues, scanner noise. Use the field-verified recipe in `zero-touch-edge-cases.md`
+   §Serving enrollment profiles — don't improvise this one.
+
+Then: [HUMAN, once ever] On the device: open the file/URL → Settings → "Profile Downloaded" →
+Install → passcode → Install. (iOS may require Safari for URL downloads.)
+
+After install:
+- Watch `~/.device-it/mdm/nanomdm.log` for the enrollment (TokenUpdate) — extract the device UDID.
+- If option 2/3 was used: remove the profile from the deploy / stop the server and close its funnel path.
+- Write config:
    ```json
    {
      "serverUrl": "https://<host>.<tailnet>.ts.net",
@@ -82,7 +102,6 @@ existing cert (not create a new one) or the topic changes and the iPad must re-e
      "imessage_to": ""
    }
    ```
-5. Stop the temporary file server; close its funnel path.
 
 ## 8. Prove the pipe
 Push a test web clip (any registry app, or the demo) via

@@ -30,6 +30,26 @@ QR/iMessage link + Add to Home Screen (≈2 taps; Android/desktop show a native 
 and mention that `/device-it setup` (~10 min, once) upgrades Apple devices to zero-touch. Never
 block the scan lane on setup — it's the universal one.
 
+## Install routes — match the situation BEFORE you start
+
+The default pipeline below is right most of the time. But check this table **first** (the
+situation often makes a different route strictly easier), and check it **again** whenever the
+default hits friction. These are field-solved routes — don't re-derive what's already here.
+
+| Situation | Route | Doc | Status |
+|---|---|---|---|
+| App already hosted (VPS, live backend, existing URL) | **Wrap mode** — skip build+deploy entirely: `run.sh --url …` | `zero-touch-edge-cases.md` | ✅ field-run |
+| Own 1–2 devices, main worry is updates | **Scan once** — the service worker auto-updates every launch; MDM adds nothing here | this file | ✅ field-run |
+| Icons must appear/update/vanish with NO taps (Apple) | **Zero-touch lane** — pocket MDM | `onboarding.md` | ✅ field-run |
+| Many devices, remote devices, or VPS-hosted app + MDM | **Full APNs cert flow** — the verified sequence | `zero-touch-edge-cases.md` | ✅ field-run |
+| No hosting account anywhere | **Claim-first deploy** — live before any signup | `hosting.md` | ✅ field-run |
+| Send notifications TO the installed app | **Web Push (VAPID)** — no Apple cert at all | `web-push.md` | ◐ designed |
+| Enrollment profile onto a nearby Apple device | **AirDrop it** — no server, no funnel | `onboarding.md` §7 | ◐ designed |
+
+This table is NOT exhaustive. If the situation matches nothing here, adapt the closest route
+or invent a new one — we have definitely not thought of every use case. When an invented route
+works, write it into `references/` so the next run doesn't re-derive it.
+
 ## Non-negotiables
 
 1. Run `scripts/inspect.sh` from the project root first; trust its output over docs.
@@ -86,10 +106,12 @@ own install instructions on screen.
 
 ## Reference map
 
-- `references/onboarding.md` — one-time zero-touch-lane setup wizard (agent-driven).
+- `references/onboarding.md` — one-time zero-touch-lane setup wizard (agent-driven; use
+  connected email/browser MCPs to shrink the cert dance to two human touches).
+- `references/zero-touch-edge-cases.md` — battle-tested field notes: VPS apps, the verified
+  APNs cert sequence, funnel hardening, profile serving, gitignored private state.
+- `references/web-push.md` — notifications to installed apps without any Apple cert (VAPID).
 - `references/mdm-protocol.md` — nanomdm endpoints, command plists, lifecycle, renewal.
-- `references/zero-touch-edge-cases.md` — field fixes for VPS-hosted apps, APNs cert import,
-  Tailscale path routing, iOS enrollment serving, and gitignored private state.
 - `references/hosting.md` — deploy driver contract, vercel details, custom domains, caveats.
 - `references/report-template.md` — the exact final report to give the user.
 

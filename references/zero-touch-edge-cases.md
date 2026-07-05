@@ -1,7 +1,21 @@
 # Zero-Touch Edge Cases
 
 Field notes from a full setup of a local-first app hosted on a VPS, then installed on an
-iPhone through the pocket MDM.
+iPhone through the pocket MDM. **This entire flow is battle-tested end to end.**
+
+## If you just want it working (the 5-line version)
+
+```bash
+bash scripts/run.sh --url https://app.on-your-vps.example --name "App" --slug app --icon icon.png   # VPS app → wrap mode
+# cert once (agent drives; human does email-verify + Apple 2FA): onboarding.md §4, verified sequence below
+bash scripts/mdm/make-ca.sh https://<tailnet-host> <push-topic>
+bash scripts/mdm/mdm-up.sh          # now exposes only /mdm by default (hardening below is built in)
+node scripts/mdm/mdm-push.mjs install --profile ~/.device-it/out/app.mobileconfig
+```
+
+Enrollment profile onto the phone: **AirDrop first** (no server needed — onboarding.md §7);
+the funnel-served recipe below is the remote-device fallback. Everything after this line is
+the detail and the sharp edges, in the order we hit them.
 
 ## VPS-hosted local-first apps
 
@@ -37,7 +51,8 @@ a new unrelated one, or devices need re-enrollment.
 
 ## Tailscale Funnel routing
 
-Expose only the MDM endpoint:
+**Now the default** — `mdm-up.sh` path-scopes the funnel to `/mdm` itself; you only need this
+section when running the funnel by hand. Expose only the MDM endpoint:
 
 ```bash
 tailscale funnel --bg --yes --https=443 --set-path /mdm http://127.0.0.1:9930/mdm

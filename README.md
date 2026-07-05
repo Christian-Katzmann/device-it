@@ -98,8 +98,10 @@ If no hosting CLI is authed, device-it uses Netlify's anonymous deploy, so **you
 
 ## Under the hood
 
-- [`SKILL.md`](SKILL.md) — the agent-facing contract (what an agent does, verbatim)
+- [`SKILL.md`](SKILL.md) — the agent-facing contract, including the **install-routes table**: seven field-solved routes (wrap mode for VPS apps, claim-first, zero-touch, Web Push, …) the agent matches against your situation before starting
 - [`references/hosting.md`](references/hosting.md) — the deploy-driver contract and each driver's live-verified quirks
+- [`references/zero-touch-edge-cases.md`](references/zero-touch-edge-cases.md) — battle-tested field notes from a full VPS + APNs-certificate setup
+- [`references/web-push.md`](references/web-push.md) — notifications to installed apps, no Apple certificate needed
 - [`references/mdm-protocol.md`](references/mdm-protocol.md) · [`references/onboarding.md`](references/onboarding.md) — pocket-MDM internals and the one-time setup
 - [`docs/decisions/`](docs/decisions/) — why the architecture is what it is, including the roads deliberately not taken
 - `npm run verify` — syntax-checks every script and manifest; no network, no deploys

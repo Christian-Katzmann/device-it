@@ -46,6 +46,10 @@ network, no deploys, safe to run anywhere).
   one addition: Codex runs shell from the plugin cache root, so the project dir must be
   passed explicitly. Don't fold it into the root file — the split is the compatibility.
 
+- **Routes are captured knowledge.** SKILL.md's install-routes table exists so agents don't
+  re-derive solved problems. When you field-verify a new route (or an edge case), write it
+  into `references/` and add a table row — flip ◐ to ✅ only after a real run.
+
 ## Where truth lives
 
 - [SKILL.md](SKILL.md) — usage contract (pipeline, verbs, honest limits)

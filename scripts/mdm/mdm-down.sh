@@ -10,5 +10,8 @@ if [[ -f "$PIDFILE" ]]; then
   rm -f "$PIDFILE"
   echo "nanomdm stopped"
 fi
-tailscale funnel --https=443 off 2>/dev/null || tailscale funnel 9930 off 2>/dev/null || tailscale serve reset 2>/dev/null || true
+tailscale funnel --https=443 --set-path /mdm off 2>/dev/null \
+  || tailscale funnel --https=443 off 2>/dev/null \
+  || tailscale funnel 9930 off 2>/dev/null \
+  || tailscale serve reset 2>/dev/null || true
 echo "funnel closed"

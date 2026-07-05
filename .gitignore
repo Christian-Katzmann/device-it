@@ -2,11 +2,11 @@ node_modules/
 .env*
 .DS_Store
 
-# Local/private runtime state. This folder may contain APNs certs, private keys,
+# Local/private runtime state. May contain APNs certs, private keys,
 # enrollment profiles, UDIDs, downloaded Apple certs, and field notes.
 local-state/
 
-# Belt-and-suspenders for accidental drops in the plugin folder.
+# Belt-and-suspenders for accidental drops in the repo folder.
 *.mobileconfig
 *.pem
 *.key

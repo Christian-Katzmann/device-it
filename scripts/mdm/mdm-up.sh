@@ -27,10 +27,11 @@ else
   kill -0 "$(cat "$PIDFILE")" 2>/dev/null || { echo "mdm-up: nanomdm failed to start; tail $LOG" >&2; tail -5 "$LOG" >&2; exit 1; }
 fi
 
-# Tailscale up + funnel
+# Tailscale up + funnel — expose ONLY /mdm, never the whole port. Public funnel hosts get
+# scanned within minutes; path-scoping keeps that noise out of nanomdm's logs (field-verified).
 tailscale status >/dev/null 2>&1 || { echo "mdm-up: tailscale not running — run: tailscale up" >&2; exit 1; }
-if ! tailscale funnel status 2>/dev/null | grep -q ":$PORT"; then
-  tailscale funnel --bg "$PORT" >/dev/null
+if ! tailscale funnel status 2>/dev/null | grep -q "$PORT/mdm"; then
+  tailscale funnel --bg --yes --https=443 --set-path /mdm "http://127.0.0.1:$PORT/mdm" >/dev/null
 fi
 
 HOST=$(tailscale status --json | python3 -c 'import json,sys; print(json.load(sys.stdin)["Self"]["DNSName"].rstrip("."))')
