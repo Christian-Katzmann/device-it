@@ -1,6 +1,6 @@
 {
   "name": "device-it",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Turn local web projects into installable phone, tablet, and desktop apps through PWA build, deploy, QR, and MDM install flows.",
   "author": {
     "name": "Christian Katzmann"
